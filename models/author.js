@@ -61,29 +61,27 @@ const getAll = async () => {
 };
 
 const getAuthorById = async (id) => {
-  // ----------------------------------------
-// mysql
+  // versão mysql
   // const [author] = await connection.execute('select id, first_name, middle_name, last_name from authors where id = ?', [id])
   // if(!author) return null
   // // console.log('author from getAuthorById: ', author);
   // return author.map(serialize)[0];
-// ----------------------------------------
 
-// mongodb
-const conn = await connection();
-const authorData = await conn.collection('authors').findOne(ObjectId(id)); // Sempre usar a função ObjectId nativa do mongodb para validar ids nas queries
+  if (ObjectId.isValidId(id)) return null;
 
-if(!authorData) return null;
+  const conn = await connection();
+  const authorData = await conn.collection('authors').findOne(ObjectId(id)); // Sempre usar a função ObjectId nativa do mongodb para validar ids nas queries
 
-const { firstName, middleName, lastName } = authorData;
+  if(!authorData) return null;
 
-return getFullNameAuthor({
-  id, // Não precisa informar "_id", pois ele chega como parâmetro na função
-  firstName,
-  middleName,
-  lastName
-});
+  const { firstName, middleName, lastName } = authorData;
 
+  return getFullNameAuthor({
+    id, // Não precisa informar "_id", pois ele chega como parâmetro na função
+    firstName,
+    middleName,
+    lastName
+  });
 };
 
 const isValid = (first_name, middle_name, last_name) => {
@@ -94,10 +92,15 @@ const isValid = (first_name, middle_name, last_name) => {
   return true;
 };
 
-const addAuthor = async (firstName, middleName, lastName) => await connection.execute(
-  'INSERT INTO model_example.authors (first_name, middle_name, last_name) VALUES (?, ?, ?)',
-  [firstName, middleName, lastName]
-);
+const addAuthor = async (firstName, middleName, lastName) => {
+  // Versão mysql
+  // await connection.execute(
+  // 'INSERT INTO model_example.authors (first_name, middle_name, last_name) VALUES (?, ?, ?)',
+  // [firstName, middleName, lastName])
+
+  const conn = await connection();
+  await conn.collection('authors').insertOne({ first_name: firstName, middle_name: middleName, last_name: lastName })
+};
 
 const isValidId = (id) => {
   if(!id) return false;
