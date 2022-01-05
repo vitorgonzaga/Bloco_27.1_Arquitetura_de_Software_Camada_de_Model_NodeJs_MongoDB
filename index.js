@@ -16,11 +16,12 @@ app.get('/authors', async (_req, res) => {
 });
 
 // Retorna o autor pelo id
-app.get('authors/:id', async (req, res) => {
+app.get('/authors/:id', async (req, res) => {
   const authorId = req.params.id;
-  const author = await author.getAuthorById(authorId);
-  if (!author) return res.status(404).json({ message: 'Not Found' });
-  return res.status(200).json(author);
+  console.log('authorId req.params: ', authorId);
+  const authorDados = await author.getAuthorById(authorId);
+  if (!authorDados) return res.status(404).json({ message: 'Not Found' });
+  return res.status(200).json(authorDados);
 })
 
 // Criando um método post para adicionar um novo escritor
@@ -34,15 +35,15 @@ app.post('/authors', async (req, res) => {
 });
 
 // Deletando pelo id enviado no body da requisição e customizando a messagem para aparecer o fullName do autor deletado
-app.delete('/authors', async (req, res) => {
-  const { id } = req.body;
-  const fullNameAuthor = await author.getAuthorById(id);
-  if(!fullNameAuthor) return res.status(404).json({ message: "Not Found" });
-  const { fullName } = fullNameAuthor;
-  if(!author.isValidId(id)) return res.status(400).json({ message: 'Id Inválido' });
-  await author.deleteAuthorById(id)
-  return res.status(200).json({ message: `${fullName} - id: ${id} - deletado com sucesso!` })
-})
+// app.delete('/authors', async (req, res) => {
+//   const { id } = req.body;
+//   const fullNameAuthor = await author.getAuthorById(id);
+//   if(!fullNameAuthor) return res.status(404).json({ message: "Not Found" });
+//   const { fullName } = fullNameAuthor;
+//   if(!author.isValidId(id)) return res.status(400).json({ message: 'Id Inválido' });
+//   await author.deleteAuthorById(id)
+//   return res.status(200).json({ message: `${fullName} - id: ${id} - deletado com sucesso!` })
+// })
 
 // echo '{"id": "6"}' | http DELETE :3000/authors
 
