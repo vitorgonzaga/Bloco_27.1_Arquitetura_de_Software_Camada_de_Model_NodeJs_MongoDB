@@ -67,7 +67,7 @@ const getAuthorById = async (id) => {
   // // console.log('author from getAuthorById: ', author);
   // return author.map(serialize)[0];
 
-  if (ObjectId.isValidId(id)) return null;
+  // if (ObjectId.isValidId(id)) return null;
 
   const conn = await connection();
   const authorData = await conn.collection('authors').findOne(ObjectId(id)); // Sempre usar a função ObjectId nativa do mongodb para validar ids nas queries

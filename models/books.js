@@ -1,4 +1,4 @@
-const { ObjectId } = require('bson');
+// const { ObjectId } = require('mondodb');
 const connection = require('./connection');
 
 const getAll = async () => {
@@ -13,24 +13,30 @@ const getAll = async () => {
 };
 
 const getBooksByAuthorId = async(id) => {
-
+console.log("id no getBooksById: ", id, typeof(id));
   // Versão Mysql
   // const [rows] = await connection.execute('SELECT title FROM model_example.books WHERE author_id = ?', [id]);
   // if (!rows) return null;
   // return rows;
 
+
+  // const aggregation = [ { $match: { author_id: { $eq: id } } } ];
   const conn = await connection();
-  const oneAuthor = await conn.collection('books').findOne(ObjectId(id))
+  // const idNumberFormat = parseInt(id);
+  // return { id: _id, title, author_id } = await conn.collection('books').find( { author_id: id });
+  const oneAuthor = await conn.collection('books').find({ author_id: id }).toArray();
+  // const oneAuthor = await conn.collection('books').aggregate(aggregation);
+
 
   if(!oneAuthor) return null;
-
-  const { _id, title, author_id } = oneAuthor;
-
-  return {
-    id: _id,
-    title,
-    author_id
-  };
+  console.log('oneAuthor: ', oneAuthor);
+  return oneAuthor.map(({ _id, title, author_id }) => {
+    return {
+      id: _id,
+      title,
+      author_id
+    }
+  });
 };
 
 const addBook = async (title, id) => {
